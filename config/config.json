@@ -3,7 +3,7 @@
   "modules": [
     {
       "name": "portscan_module",
-      "target": "127.0.0.1",
+      "target": "192.168.149.158",
       "ports": [22, 80, 443, 8080]
     }
   ]
