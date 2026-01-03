@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import socket
 
 port = 9000
