@@ -2,12 +2,10 @@
   "active_clients": [],
   "modules": [
     {
-      "name": "ddos_module",
-      "target": "127.0.0.1",
-      "port": 9000,
-      "duration": 10,
-      "threads": 5,
-      "attack_type": "udp"
+      "name": "reverse_shell_module",
+      "host": "127.0.0.1",
+      "port": 4444,
+      "timeout": 300
     }
   ]
 }
