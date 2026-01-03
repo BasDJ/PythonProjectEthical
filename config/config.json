@@ -1,0 +1,25 @@
+{
+  "active_clients": [],
+  "modules": [
+    {
+      "name": "ddos_module",
+      "target": "127.0.0.1",
+      "port": 80,
+      "duration": 10,
+      "threads": 5,
+      "attack_type": "http"
+    },
+    {
+      "name": "portscan_module",
+      "target": "127.0.0.1",
+      "ports": [22, 80, 443, 8080]
+    },
+    {
+      "name": "reverse_shell_module",
+      "host": "127.0.0.1",
+      "port": 4444,
+      "timeout": 300
+    }
+  ]
+}
+
