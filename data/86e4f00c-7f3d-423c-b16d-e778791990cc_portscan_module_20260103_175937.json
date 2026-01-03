@@ -1,0 +1,20 @@
+{
+  "client_id": "86e4f00c-7f3d-423c-b16d-e778791990cc",
+  "module": "portscan_module",
+  "timestamp": "20260103_175937",
+  "result": {
+    "module": "portscan_module",
+    "client_id": "86e4f00c-7f3d-423c-b16d-e778791990cc",
+    "target": "192.168.149.158",
+    "scan_duration": 3.024639129638672,
+    "total_ports_scanned": 4,
+    "open_ports": [
+      {
+        "port": 22,
+        "state": "open"
+      }
+    ],
+    "open_ports_count": 1,
+    "status": "completed"
+  }
+}
