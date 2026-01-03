@@ -4,7 +4,7 @@
     {
       "name": "ddos_module",
       "target": "127.0.0.1",
-      "port": 80,
+      "port": 8000,
       "duration": 10,
       "threads": 5,
       "attack_type": "http"
