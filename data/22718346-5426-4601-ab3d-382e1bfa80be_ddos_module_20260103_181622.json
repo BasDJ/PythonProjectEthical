@@ -1,0 +1,16 @@
+{
+  "client_id": "22718346-5426-4601-ab3d-382e1bfa80be",
+  "module": "ddos_module",
+  "timestamp": "20260103_181622",
+  "result": {
+    "module": "ddos_module",
+    "client_id": "22718346-5426-4601-ab3d-382e1bfa80be",
+    "target": "127.0.0.1",
+    "port": 9000,
+    "attack_type": "udp",
+    "duration": 10.064088106155396,
+    "total_requests": 500,
+    "successful_requests": 0,
+    "status": "completed"
+  }
+}
