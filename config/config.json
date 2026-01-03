@@ -2,9 +2,12 @@
   "active_clients": [],
   "modules": [
     {
-      "name": "portscan_module",
-      "target": "192.168.149.158",
-      "ports": [22, 80, 443, 8080]
+      "name": "ddos_module",
+      "target": "127.0.0.1",
+      "port": 80,
+      "duration": 10,
+      "threads": 5,
+      "attack_type": "http"
     }
   ]
 }
