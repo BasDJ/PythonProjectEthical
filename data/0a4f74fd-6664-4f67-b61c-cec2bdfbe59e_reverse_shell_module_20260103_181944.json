@@ -1,0 +1,26 @@
+{
+  "client_id": "0a4f74fd-6664-4f67-b61c-cec2bdfbe59e",
+  "module": "reverse_shell_module",
+  "timestamp": "20260103_181944",
+  "result": {
+    "module": "reverse_shell_module",
+    "status": "completed",
+    "duration": 87.17468976974487,
+    "commands_executed": 17,
+    "command_list": [
+      "ls",
+      "mkdir",
+      "ls",
+      "a",
+      "f",
+      "c",
+      "a",
+      "ls",
+      "a",
+      "touch"
+    ],
+    "client_id": "0a4f74fd-6664-4f67-b61c-cec2bdfbe59e",
+    "target_host": "127.0.0.1",
+    "target_port": 4444
+  }
+}
