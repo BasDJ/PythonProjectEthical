@@ -7,7 +7,7 @@
       "port": 8000,
       "duration": 10,
       "threads": 5,
-      "attack_type": "http"
+      "attack_type": "udp"
     }
   ]
 }
