@@ -17,11 +17,18 @@ class GitHubConnector:
     def get_file(self, path):
         try:
             r = requests.get(f"{self.base_url}/contents/{path}", headers=self.headers, timeout=10)
+            if r.status_code == 404:
+                print(f"[GitHub] File not found: {path}")
+                return None
+            if r.status_code != 200:
+                print(f"[GitHub] Error {r.status_code}: {r.text[:100]}")
+                return None
             data = r.json()
             if data.get("encoding") == "base64":
                 return base64.b64decode(data["content"]).decode("utf-8")
             return data.get("content", "")
-        except:
+        except Exception as e:
+            print(f"[GitHub] Error fetching {path}: {e}")
             return None
     
     def upload_file(self, path, content):
@@ -50,10 +57,13 @@ class GitHubConnector:
     def get_config(self):
         content = self.get_file("config/config.json")
         if not content:
+            print("[GitHub] config/config.json not found in repository")
+            print("[GitHub] Make sure the file exists at: config/config.json")
             return None
         try:
             return json.loads(content)
-        except:
+        except Exception as e:
+            print(f"[GitHub] Invalid JSON in config: {e}")
             return None
 
 
@@ -169,15 +179,15 @@ class Agent:
 
 
 def main():
-    if os.path.exists("config.json"):
-        with open("config.json", "r") as f:
+    if os.path.exists("agent_config.json"):
+        with open("agent_config.json", "r") as f:
             cfg = json.load(f)
             repo_owner = cfg.get("repo_owner")
             repo_name = cfg.get("repo_name")
             token = cfg.get("github_token")
             client_id = cfg.get("client_id")
     else:
-        print("Create config.json with repo_owner, repo_name, github_token")
+        print("Create agent_config.json with repo_owner, repo_name, github_token")
         return
     
     if not all([repo_owner, repo_name, token]):
