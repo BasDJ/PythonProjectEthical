@@ -1,0 +1,5 @@
+{
+  "module": "reverse_shell",
+  "command": "whoami",
+  "output": "basde\n"
+}

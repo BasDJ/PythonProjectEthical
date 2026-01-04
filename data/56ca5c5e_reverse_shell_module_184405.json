@@ -1,0 +1,1 @@
+{"module": "reverse_shell", "command": "whoami", "output": "name 'subprocess' is not defined"}

