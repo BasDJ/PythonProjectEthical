@@ -1,0 +1,16 @@
+{
+  "client_id": "ac21783f-04a2-4e6f-a032-5c65ccc416a5",
+  "module": "ddos_module",
+  "timestamp": "20260104_012945",
+  "result": {
+    "module": "ddos_module",
+    "client_id": "ac21783f-04a2-4e6f-a032-5c65ccc416a5",
+    "target": "127.0.0.1",
+    "port": 8000,
+    "attack_type": "http",
+    "duration": 10.097620248794556,
+    "total_requests": 970,
+    "successful_requests": 970,
+    "status": "completed"
+  }
+}
